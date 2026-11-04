@@ -1,0 +1,10 @@
+{
+  "tipo": "PUBLICACION_ACADEMICA_SOLO_LECTURA",
+  "creado_utc": "2026-11-04T04:46:11.269302+00:00",
+  "csv_nombre_proporcionado": "Spaphish dataset - DiB.csv",
+  "csv_sha256": "656b2245d58da72d640680e5c2a168673a130b38607f2a427c773bbb167e995e",
+  "version_sklearn": "1.9.1",
+  "modelo": "Regresión Logística",
+  "f1_test": 0.9686411149825784,
+  "nota": "El dataset original no se publica. Las métricas reflejan el archivo proporcionado, no validación en mensajería instantánea. La procedencia real debe cotejarse con el DOI de SpaPhish."
+}

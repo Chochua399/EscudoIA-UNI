@@ -1,0 +1,7 @@
+ESCUDOIA · ENTREGA ACADÉMICA
+
+Este paquete CONTIENE el modelo entrenado y las evidencias pero NO contiene el CSV original.
+Sube todos los archivos de esta carpeta a la RAÍZ de un repositorio de GitHub.
+En https://share.streamlit.io selecciona el repositorio, rama main, ruta app/app.py
+y en Advanced settings escoge Python 3.14.
+Este proyecto es preventivo y no garantiza que un mensaje sea seguro.

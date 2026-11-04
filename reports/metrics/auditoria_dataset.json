@@ -1,0 +1,24 @@
+{
+  "fuente": "SpaPhish; archivo local proporcionado por el investigador",
+  "doi_esperado": "10.17632/hz2d6gz7pc.5",
+  "archivo": "Spaphish dataset - DiB.csv",
+  "sha256_archivo_original": "656b2245d58da72d640680e5c2a168673a130b38607f2a427c773bbb167e995e",
+  "filas_originales": 1395,
+  "columnas_originales": 47,
+  "nulos_originales": {
+    "subject": 3,
+    "body": 0,
+    "label": 0
+  },
+  "etiquetas_invalidas_descartadas": 0,
+  "textos_vacios_descartados": 0,
+  "filas_conflicto_descartadas": 0,
+  "duplicados_exactos_descartados": 0,
+  "duplicados_descartados": 0,
+  "plantillas_normalizadas_grupos": 1350,
+  "grupos_con_etiquetas_mixtas": 0,
+  "filas_preparadas": 1395,
+  "legitimos_0": 664,
+  "phishing_1": 731,
+  "nota": "Las cifras de origen no se confunden con registros retenidos después de limpiar."
+}

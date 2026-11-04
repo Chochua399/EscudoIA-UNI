@@ -1,0 +1,21 @@
+{
+  "modelo": "Regresión Logística",
+  "creacion_utc": "2026-11-04T04:33:34.749368+00:00",
+  "hash_dataset": "656b2245d58da72d640680e5c2a168673a130b38607f2a427c773bbb167e995e",
+  "dataset_archivo": "Spaphish dataset - DiB.csv",
+  "metodo": "TF-IDF con clasificador supervisado",
+  "clases": {
+    "0": "legítimo",
+    "1": "phishing"
+  },
+  "f1_cv": 0.955863063167742,
+  "f1_test": 0.9686411149825784,
+  "umbrales_riesgo": {
+    "bajo_hasta": 0.35,
+    "alto_desde": 0.7,
+    "estado": "provisionales; NO optimizados ni validados para despliegue real"
+  },
+  "brier_score_test": 0.025907052461810007,
+  "advertencia": "Riesgo orientativo; no verifica el destino de enlaces ni al remitente.",
+  "version_sklearn_entrenamiento": "1.9.1"
+}

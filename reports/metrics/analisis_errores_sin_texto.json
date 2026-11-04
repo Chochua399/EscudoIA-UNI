@@ -1,0 +1,55 @@
+{
+  "descripcion": "Características agregadas de FP/FN, sin incluir mensajes",
+  "total_falsos_negativos": 7,
+  "total_falsos_positivos": 2,
+  "grupos": {
+    "falsos_negativos": {
+      "cantidad": 7,
+      "longitud_media_caracteres": 1321.57,
+      "mensajes_con_enlace": 2,
+      "senales_frecuentes": {
+        "Suplantación de autoridad aparente": 2,
+        "Incluye una dirección web o un enlace ofuscado (sin verificación de destino)": 2,
+        "Urgencia o presión": 1,
+        "Solicitud de credenciales o datos sensibles": 1,
+        "Premio, regalo o beneficio inesperado": 1
+      }
+    },
+    "falsos_positivos": {
+      "cantidad": 2,
+      "longitud_media_caracteres": 433.5,
+      "mensajes_con_enlace": 1,
+      "senales_frecuentes": {
+        "Incluye una dirección web o un enlace ofuscado (sin verificación de destino)": 1
+      }
+    },
+    "aciertos_phishing": {
+      "cantidad": 139,
+      "longitud_media_caracteres": 695.99,
+      "mensajes_con_enlace": 16,
+      "senales_frecuentes": {
+        "Urgencia o presión": 49,
+        "Uso repetido de signos de exclamación": 35,
+        "Premio, regalo o beneficio inesperado": 17,
+        "Incluye una dirección web o un enlace ofuscado (sin verificación de destino)": 16,
+        "Transferencia, cobro o depósito": 12,
+        "Solicitud de credenciales o datos sensibles": 11,
+        "Suplantación de autoridad aparente": 7
+      }
+    },
+    "aciertos_legitimos": {
+      "cantidad": 131,
+      "longitud_media_caracteres": 1829.66,
+      "mensajes_con_enlace": 66,
+      "senales_frecuentes": {
+        "Incluye una dirección web o un enlace ofuscado (sin verificación de destino)": 66,
+        "Solicitud de credenciales o datos sensibles": 13,
+        "Uso repetido de signos de exclamación": 12,
+        "Suplantación de autoridad aparente": 10,
+        "Urgencia o presión": 9,
+        "Transferencia, cobro o depósito": 9,
+        "Premio, regalo o beneficio inesperado": 6
+      }
+    }
+  }
+}

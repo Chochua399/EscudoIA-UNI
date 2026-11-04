@@ -1,0 +1,167 @@
+{
+  "estado": "ENTRENAMIENTO_REAL_CON_CSV_LOCAL",
+  "fuente_archivo": "Spaphish dataset - DiB.csv",
+  "dataset": {
+    "fuente": "SpaPhish; archivo local proporcionado por el investigador",
+    "doi_esperado": "10.17632/hz2d6gz7pc.5",
+    "archivo": "Spaphish dataset - DiB.csv",
+    "sha256_archivo_original": "656b2245d58da72d640680e5c2a168673a130b38607f2a427c773bbb167e995e",
+    "filas_originales": 1395,
+    "columnas_originales": 47,
+    "nulos_originales": {
+      "subject": 3,
+      "body": 0,
+      "label": 0
+    },
+    "etiquetas_invalidas_descartadas": 0,
+    "textos_vacios_descartados": 0,
+    "filas_conflicto_descartadas": 0,
+    "duplicados_exactos_descartados": 0,
+    "duplicados_descartados": 0,
+    "plantillas_normalizadas_grupos": 1350,
+    "grupos_con_etiquetas_mixtas": 0,
+    "filas_preparadas": 1395,
+    "legitimos_0": 664,
+    "phishing_1": 731,
+    "nota": "Las cifras de origen no se confunden con registros retenidos después de limpiar."
+  },
+  "ejecutado_utc": "2026-11-04T04:33:34.749368+00:00",
+  "python": "3.14.5",
+  "scikit_learn": "1.9.1",
+  "bibliotecas": {
+    "numpy": "2.5.4",
+    "pandas": "2.3.3",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.1",
+    "matplotlib": "3.11.2",
+    "joblib": "1.6.0"
+  },
+  "seed": 42,
+  "division": {
+    "entrenamiento": 1116,
+    "test_reservado": 279,
+    "entrenamiento_phishing": 585,
+    "test_phishing": 146,
+    "sin_solapamiento_de_grupos": true
+  },
+  "validacion_cruzada_pliegues": 5,
+  "busqueda": "GridSearchCV exhaustivo en modo rápido; RandomizedSearchCV de 18 configuraciones por modelo en modo completo",
+  "comparacion_validacion": {
+    "Naive Bayes Multinomial": {
+      "f1_cv": 0.9479268286253035,
+      "desviacion_f1_cv": 0.019361200387849734,
+      "recall_cv": 0.9230769230769231,
+      "precision_cv": 0.974859274190312,
+      "accuracy_cv": 0.9471292440743113,
+      "parametros": {
+        "tfidf__sublinear_tf": true,
+        "tfidf__ngram_range": [
+          1,
+          1
+        ],
+        "tfidf__min_df": 1,
+        "tfidf__max_df": 0.9,
+        "model__alpha": 0.1
+      },
+      "duracion_segundos": 26.47,
+      "configuraciones_evaluadas": 18,
+      "tipo_busqueda": "RandomizedSearchCV"
+    },
+    "Regresión Logística": {
+      "f1_cv": 0.955863063167742,
+      "desviacion_f1_cv": 0.016965547558864248,
+      "recall_cv": 0.9299145299145299,
+      "precision_cv": 0.9837030941603462,
+      "accuracy_cv": 0.9551889814221652,
+      "parametros": {
+        "tfidf__sublinear_tf": true,
+        "tfidf__ngram_range": [
+          1,
+          2
+        ],
+        "tfidf__min_df": 2,
+        "tfidf__max_df": 0.9,
+        "model__class_weight": null,
+        "model__C": 10.0
+      },
+      "duracion_segundos": 29.21,
+      "configuraciones_evaluadas": 18,
+      "tipo_busqueda": "RandomizedSearchCV"
+    },
+    "SVM lineal": {
+      "f1_cv": 0.9642486787266163,
+      "desviacion_f1_cv": 0.012518121493502917,
+      "recall_cv": 0.9487179487179487,
+      "precision_cv": 0.9805378237107562,
+      "accuracy_cv": 0.9632567264573991,
+      "parametros": {
+        "tfidf__sublinear_tf": true,
+        "tfidf__ngram_range": [
+          1,
+          1
+        ],
+        "tfidf__min_df": 2,
+        "tfidf__max_df": 1.0,
+        "model__class_weight": null,
+        "model__C": 5.0
+      },
+      "duracion_segundos": 27.21,
+      "configuraciones_evaluadas": 18,
+      "tipo_busqueda": "RandomizedSearchCV"
+    }
+  },
+  "nota_metodologica": "Los candidatos se seleccionan exclusivamente con CV en train. El test se evalúa solo con el ganador final.",
+  "verificacion_fuente": "El software valida columnas y etiquetas, pero NO puede certificar que un archivo CSV local sea la edición oficial SpaPhish. Verifique DOI y SHA-256 del archivo descargado.",
+  "calibracion": "Calibración sigmoide (Platt) con 5 pliegues agrupados usando solo entrenamiento. Las probabilidades NO demuestran seguridad; los umbrales siguen provisionales.",
+  "baseline_test": {
+    "accuracy": 0.5232974910394266,
+    "precision_phishing": 0.5232974910394266,
+    "recall_phishing": 1.0,
+    "f1_phishing": 0.6870588235294117,
+    "matriz_confusion_orden_0_1": [
+      [
+        0,
+        133
+      ],
+      [
+        0,
+        146
+      ]
+    ],
+    "TN": 0,
+    "FP": 133,
+    "FN": 0,
+    "TP": 146
+  },
+  "modelo_seleccionado_por_cv": "Regresión Logística",
+  "test_final": {
+    "accuracy": 0.967741935483871,
+    "precision_phishing": 0.9858156028368794,
+    "recall_phishing": 0.952054794520548,
+    "f1_phishing": 0.9686411149825784,
+    "matriz_confusion_orden_0_1": [
+      [
+        131,
+        2
+      ],
+      [
+        7,
+        139
+      ]
+    ],
+    "TN": 131,
+    "FP": 2,
+    "FN": 7,
+    "TP": 139,
+    "roc_auc": 0.9964980945514471,
+    "average_precision": 0.9970085012572836,
+    "brier_score": 0.025907052461810007
+  },
+  "classification_report_test": "              precision    recall  f1-score   support\n\n    legítimo       0.95      0.98      0.97       133\n    phishing       0.99      0.95      0.97       146\n\n    accuracy                           0.97       279\n   macro avg       0.97      0.97      0.97       279\nweighted avg       0.97      0.97      0.97       279\n",
+  "umbrales_riesgo": {
+    "bajo_hasta": 0.35,
+    "alto_desde": 0.7,
+    "estado": "provisionales; NO optimizados ni validados para despliegue real"
+  },
+  "nota_generalizacion": "Los resultados miden desempeño sobre una partición de correos del CSV aportado, no sobre WhatsApp, SMS, Nicaragua ni campañas nuevas."
+}

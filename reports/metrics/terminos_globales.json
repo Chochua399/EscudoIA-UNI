@@ -1,0 +1,126 @@
+{
+  "phishing": [
+    {
+      "termino": "su",
+      "peso": 4.554540157842466
+    },
+    {
+      "termino": "paquete",
+      "peso": 3.3842558824334468
+    },
+    {
+      "termino": "entrega",
+      "peso": 2.833313836733002
+    },
+    {
+      "termino": "su cuenta",
+      "peso": 2.642181626282
+    },
+    {
+      "termino": "factura",
+      "peso": 2.393894839714742
+    },
+    {
+      "termino": "id",
+      "peso": 2.159917041029424
+    },
+    {
+      "termino": "script",
+      "peso": 2.12473567680389
+    },
+    {
+      "termino": "regalo",
+      "peso": 2.057964758457626
+    },
+    {
+      "termino": "haga clic",
+      "peso": 1.99837928642586
+    },
+    {
+      "termino": "pablito",
+      "peso": 1.9225069104642074
+    },
+    {
+      "termino": "continuacion",
+      "peso": 1.922237558298996
+    },
+    {
+      "termino": "haga",
+      "peso": 1.8823815599807276
+    },
+    {
+      "termino": "seguro com",
+      "peso": 1.8663260346177846
+    },
+    {
+      "termino": "nuestro",
+      "peso": 1.8561333730079297
+    },
+    {
+      "termino": "clic",
+      "peso": 1.8325887409510073
+    }
+  ],
+  "legitimo": [
+    {
+      "termino": "https",
+      "peso": -4.014979494035241
+    },
+    {
+      "termino": "mx",
+      "peso": -3.0359403161009095
+    },
+    {
+      "termino": "los",
+      "peso": -3.010076763760984
+    },
+    {
+      "termino": "del",
+      "peso": -2.731243227958843
+    },
+    {
+      "termino": "les",
+      "peso": -2.695546286978902
+    },
+    {
+      "termino": "www",
+      "peso": -2.6806338696880685
+    },
+    {
+      "termino": "al",
+      "peso": -2.426331541329177
+    },
+    {
+      "termino": "las",
+      "peso": -2.2913510652579663
+    },
+    {
+      "termino": "te",
+      "peso": -2.1436359408839007
+    },
+    {
+      "termino": "la",
+      "peso": -2.101089702723644
+    },
+    {
+      "termino": "con",
+      "peso": -2.0509765805955076
+    },
+    {
+      "termino": "saludos",
+      "peso": -1.974255567742916
+    },
+    {
+      "termino": "https www",
+      "peso": -1.895875106879774
+    },
+    {
+      "termino": "dr",
+      "peso": -1.7582867484380313
+    },
+    {
+      "termino": "dia",
+      "peso": -1.6802135736475694
+    }
+  ]
+}
