@@ -1,7 +1,7 @@
 # Dependencias de ejecución local y Streamlit Community Cloud (Python 3.14).
 # Fijamos la versión del estimador porque el artefacto joblib debe ser compatible.
-streamlit>=1.51.0,<2.0
-scikit-learn==1.8.0
+streamlit==1.65.0
+scikit-learn==1.9.1
 numpy>=2.3.5,<3.0
 pandas>=2.3.3,<3.0
 scipy>=1.16.2,<2.0

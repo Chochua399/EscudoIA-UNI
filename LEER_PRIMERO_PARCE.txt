@@ -1,0 +1,18 @@
+ESCUDOIA: CORRECCIÓN DE DESPLIEGUE WEB (NO ENTRENA OTRA VEZ)
+
+El ZIP contiene SOLO archivos de código/configuración que ya existen en GitHub:
+- requirements.txt: fija Streamlit 1.65.0 y scikit-learn 1.9.1.
+- app/app.py: elimina de la versión pública los componentes Radio, Selectbox, TextArea y Metric que mostraban errores al cargar módulos JS. En su lugar usa botones, entrada de una línea y texto legible. La versión local mantiene los controles originales. Se desactiva CSS HTML decorativo en la versión pública para prevenir que aparezca como texto sin formato.
+- src/models/predict_model.py: rechaza textos sin contexto (letras aleatorias).
+- tests/test_pipeline.py: incluye dos pruebas nuevas para esa validación.
+
+NO sobreescribas ni elimines models/, reports/, deployment_manifest.json ni data/raw/ de tu computadora.
+
+CÓMO APLICAR:
+1. Descarga/descomprime este ZIP.
+2. En tu PC, copia SOLO estos cuatro archivos sobre la misma ruta dentro de ESCUDOIA_LISTO_PARA_GITHUB, aceptando reemplazar cada uno.
+3. Desde la raíz de tu repositorio GitHub, Add file > Upload files y arrastra los cuatro archivos manteniendo su ruta, luego Commit changes. Si el navegador rechaza el reemplazo, edita cada archivo desde GitHub o usa Git desde VS Code.
+4. Community Cloud detectará los cambios. Si no vuelve a construir, desde My apps selecciona Reboot.
+5. Abre la web en una ventana privada. Comprueba las cuatro pantallas y el análisis de un ejemplo realista; letras aleatorias deben solicitar contexto.
+
+No se ha podido verificar aquí el funcionamiento del CDN del servidor real: si persisten errores 'Failed to fetch dynamically imported module', captura el código HTTP de los JS fallidos en F12 > Network y los Cloud logs.
