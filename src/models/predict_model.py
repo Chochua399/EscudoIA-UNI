@@ -17,6 +17,38 @@ RECOMMENDATIONS = [
     "Si sospechas una estafa, conserva evidencia y utiliza el canal oficial para reportarla.",
 ]
 
+# Regla de seguridad independiente del modelo de phishing. NO es otro clasificador ML.
+# Se emplea únicamente para evitar clasificar amenazas explícitas con una etiqueta
+# equivocada ("phishing") o presentar su puntaje como una medida de violencia.
+THREAT_RE = re.compile(
+    r"\b(?:mato|matar\w*|asesin\w*|secuestr\w*|lastim\w*|"
+    r"te\s+har[eé]\s+da[nñ]o|le\s+har[eé]\s+da[nñ]o|"
+    r"voy\s+a\s+matar|har[eé]\s+da[nñ]o)\b",
+    flags=re.IGNORECASE | re.UNICODE,
+)
+PAYMENT_RE = re.compile(
+    r"\b(?:dinero|plata|rescate|paga(?:r|me|s)?|pago|"
+    r"dep[oó]sit\w*|transfer\w*|c[oó]rdobas|dame|env[ií]a\w*)\b",
+    flags=re.IGNORECASE | re.UNICODE,
+)
+
+
+def check_threat_safety(text: str) -> None:
+    """Se abstiene ante amenaza explícita: no sustituye revisión humana ni emergencias."""
+    if not THREAT_RE.search(text):
+        return
+    if PAYMENT_RE.search(text):
+        label = "Posible amenaza o extorsión"
+    else:
+        label = "Posible amenaza de violencia"
+    raise ValueError(
+        f"⚠️ {label}: el texto contiene expresiones de posible daño físico. "
+        "Esta alerta proviene de una regla de seguridad, NO del clasificador de phishing; "
+        "no se calcula un porcentaje de peligro. "
+        "Si se trata de una amenaza real o inmediata, busca un lugar seguro, "
+        "conserva la evidencia y contacta a emergencias o a las autoridades locales."
+    )
+
 
 def load_model(path=None):
     filename = Path(path) if path else MODEL_FILE
@@ -34,14 +66,16 @@ def load_metadata(path=None):
 
 
 def validate_message(message: str) -> str:
-    """Se abstiene ante entradas demasiado breves o sin contexto lingüístico.
+    """Rechaza entradas insuficientes y deriva amenazas explícitas a advertencia.
 
-    Esta validación NO mide si un texto es phishing; previene que cadenas
-    aleatorias de letras reciban una clasificación potencialmente engañosa.
+    Estas reglas NO miden si hay delito o peligro real; limitan el alcance del
+    clasificador binario phishing/legítimo cuando el texto cae fuera de su tarea.
     """
     text = normalize_text(message)
     if len(text) > 20000:
         raise ValueError("El mensaje supera el máximo de 20.000 caracteres.")
+    # Primero reconocer posibles amenazas, aun cuando sean breves.
+    check_threat_safety(text)
     words = re.findall(r"[^\W\d_]+", text, flags=re.UNICODE)
     if len(words) < 3 or len(set(word.casefold() for word in words)) < 2:
         raise ValueError(
