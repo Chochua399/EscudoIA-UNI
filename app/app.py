@@ -23,7 +23,7 @@ st.set_page_config(
 )
 ensure_dirs()
 PUBLIC_MODE = (ROOT / "deployment_manifest.json").is_file()
-st.markdown("""
+STYLES = """
 <style>
 .main .block-container { max-width: 1130px; padding-top: 1.7rem; }
 .hero { background: linear-gradient(114deg,#102b55,#0d4a71 80%,#126b78); color: white;
@@ -35,11 +35,18 @@ st.markdown("""
 .tiny-muted { color: #66788c; font-size: .88rem; }
 @media(max-width: 720px) { .hero{padding:22px;} .hero h1{font-size:1.55rem;} }
 </style>
-""", unsafe_allow_html=True)
+"""
+if not PUBLIC_MODE:
+    st.markdown(STYLES, unsafe_allow_html=True)
 
 
 def show_hero(title: str, desc: str):
-    st.markdown(f'<div class="hero"><h1>{title}</h1><p>{desc}</p></div>', unsafe_allow_html=True)
+    if PUBLIC_MODE:
+        # Evita HTML embebido cuando el cliente web está recuperando recursos JS.
+        st.title(title)
+        st.caption(desc)
+    else:
+        st.markdown(f'<div class="hero"><h1>{title}</h1><p>{desc}</p></div>', unsafe_allow_html=True)
 
 
 @st.cache_resource(show_spinner=False)
@@ -65,7 +72,16 @@ with st.sidebar:
     navigation = (["🔍 Analizar mensaje", "📊 Resultados y EDA", "🗂️ Datos del proyecto", "📘 Cómo funciona"]
                   if PUBLIC_MODE else
                   ["🔍 Analizar mensaje", "🧪 Entrenar IA", "📊 Resultados y EDA", "🗂️ Datos del proyecto", "📘 Cómo funciona", "✅ Preparar entrega"])
-    section = st.radio("Navegación", navigation, label_visibility="collapsed")
+    if PUBLIC_MODE:
+        # Navegación con botones sencillos: no depende del componente Radio.js.
+        if "escudoia_seccion_publica" not in st.session_state:
+            st.session_state["escudoia_seccion_publica"] = navigation[0]
+        for i, target in enumerate(navigation):
+            if st.button(target, key=f"nav_publica_{i}", use_container_width=True):
+                st.session_state["escudoia_seccion_publica"] = target
+        section = st.session_state["escudoia_seccion_publica"]
+    else:
+        section = st.radio("Navegación", navigation, label_visibility="collapsed")
     st.divider()
     if MODEL_FILE.exists():
         st.success("Modelo entrenado disponible")
@@ -89,22 +105,34 @@ if section == "🔍 Analizar mensaje":
     st.info("**Privacidad:** no introduzcas contraseñas, códigos OTP, tarjetas ni información personal. No abrimos enlaces ni descargamos adjuntos.")
     col_a, col_b = st.columns([1.7, 1], gap="large")
     with col_a:
-        sample = st.selectbox("Ejemplos de prueba (ficticios)", [
-            "Escribir mi propio mensaje",
-            "Alerta de cuenta suspendida",
-            "Promesa de premio inesperado",
-            "Mensaje cotidiano",
-        ])
         examples = {
             "Alerta de cuenta suspendida": "URGENTE: su cuenta será suspendida hoy. Confirme su contraseña y el código de verificación en hxxps://portal[.]example.",
             "Promesa de premio inesperado": "Felicidades, ganó C$ 10,000 en un sorteo. Debe pagar una tarifa de activación para recibir el premio.",
             "Mensaje cotidiano": "Hola, la reunión de nuestro grupo quedó programada para mañana a las diez. Nos vemos en la universidad.",
         }
-        selected = examples.get(sample, "")
-        message = st.text_area(
-            "Mensaje que quieres analizar", value=selected, height=195, max_chars=20000,
-            placeholder="Pega aquí el mensaje sin datos personales...",
-        )
+        if PUBLIC_MODE:
+            # Controles alternativos para evitar Selectbox.js y TextArea.js
+            # mientras Streamlit Community Cloud recompone su caché JS.
+            st.write("**Ejemplos de prueba (ficticios)**")
+            buttons = st.columns(3)
+            for i, (name, example) in enumerate(examples.items()):
+                if buttons[i].button(name, key=f"ejemplo_publico_{i}", use_container_width=True):
+                    st.session_state["escudoia_mensaje_publico"] = example
+                    st.session_state.pop("resultado", None)
+            message = st.text_input(
+                "Mensaje que quieres analizar", key="escudoia_mensaje_publico", max_chars=20000,
+                placeholder="Escribe o pega tu mensaje (sin datos personales)...",
+            )
+            st.caption("Se aceptan mensajes de texto; no es necesario escribir contraseñas ni abrir enlaces.")
+        else:
+            sample = st.selectbox("Ejemplos de prueba (ficticios)", [
+                "Escribir mi propio mensaje", *examples.keys(),
+            ])
+            selected = examples.get(sample, "")
+            message = st.text_area(
+                "Mensaje que quieres analizar", value=selected, height=195, max_chars=20000,
+                placeholder="Pega aquí el mensaje sin datos personales...",
+            )
         trained = MODEL_FILE.exists()
         label = "🛡️ Analizar con inteligencia artificial" if trained else "🔎 Examinar señales (demo sin IA)"
         if st.button(label, type="primary", use_container_width=True):
@@ -129,8 +157,11 @@ if section == "🔍 Analizar mensaje":
                     st.success("**Clasificación del modelo: sin suficientes indicios de phishing**")
                 st.write("**Nivel orientativo:**", result["riesgo"])
                 if result["puntaje_modelo"] is not None:
-                    st.metric("Puntaje estimado por el modelo", f"{100*result['puntaje_modelo']:.1f}%")
-                    st.progress(min(max(result["puntaje_modelo"], 0), 1))
+                    if PUBLIC_MODE:
+                        st.markdown(f"**Puntaje estimado por el modelo:** {100*result['puntaje_modelo']:.1f}%")
+                    else:
+                        st.metric("Puntaje estimado por el modelo", f"{100*result['puntaje_modelo']:.1f}%")
+                        st.progress(min(max(result["puntaje_modelo"], 0), 1))
                     st.caption("No es la probabilidad de que ocurra una estafa real. Las bandas de riesgo son provisionales.")
             st.markdown("#### Señales lingüísticas observables")
             if result["senales"]:
@@ -246,26 +277,49 @@ elif section == "📊 Resultados y EDA":
         st.write("**Modelo seleccionado mediante validación cruzada:**", winner)
         m = data["test_final"]
         c1, c2, c3, c4 = st.columns(4)
-        c1.metric("Accuracy", f"{m['accuracy']:.1%}")
-        c2.metric("Precisión phishing", f"{m['precision_phishing']:.1%}")
-        c3.metric("Recall phishing", f"{m['recall_phishing']:.1%}")
-        c4.metric("F1 phishing", f"{m['f1_phishing']:.1%}")
+        metrics_primary = [(c1, "Accuracy", f"{m['accuracy']:.1%}"),
+                           (c2, "Precisión phishing", f"{m['precision_phishing']:.1%}"),
+                           (c3, "Recall phishing", f"{m['recall_phishing']:.1%}"),
+                           (c4, "F1 phishing", f"{m['f1_phishing']:.1%}")]
+        for slot, name, value in metrics_primary:
+            if PUBLIC_MODE:
+                slot.markdown(f"**{name}:** {value}")
+            else:
+                slot.metric(name, value)
         t1, t2 = st.columns(2)
         if "roc_auc" in m:
-            t1.metric("ROC-AUC", f"{m['roc_auc']:.3f}")
+            if PUBLIC_MODE:
+                t1.markdown(f"**ROC-AUC:** {m['roc_auc']:.3f}")
+            else:
+                t1.metric("ROC-AUC", f"{m['roc_auc']:.3f}")
         if "brier_score" in m:
-            t2.metric("Brier (menor es mejor)", f"{m['brier_score']:.3f}")
+            if PUBLIC_MODE:
+                t2.markdown(f"**Brier (menor es mejor):** {m['brier_score']:.3f}")
+            else:
+                t2.metric("Brier (menor es mejor)", f"{m['brier_score']:.3f}")
         st.caption("Métricas sobre el test reservado del archivo local; no extrapolables automáticamente a WhatsApp o Nicaragua.")
         st.markdown("#### Interpretación de los errores")
         err1, err2 = st.columns(2)
-        err1.metric("Falsos negativos", m["FN"], help="Mensajes de phishing que el modelo no detectó")
-        err2.metric("Falsos positivos", m["FP"], help="Mensajes legítimos señalados erróneamente como phishing")
+        if PUBLIC_MODE:
+            err1.markdown(f"**Falsos negativos:** {m['FN']}")
+            err2.markdown(f"**Falsos positivos:** {m['FP']}")
+        else:
+            err1.metric("Falsos negativos", m["FN"], help="Mensajes de phishing que el modelo no detectó")
+            err2.metric("Falsos positivos", m["FP"], help="Mensajes legítimos señalados erróneamente como phishing")
         if m["FN"]:
             st.warning("Hay mensajes de phishing no detectados. Se recomienda inspeccionar causas y mejorar la generalización antes de un uso real.")
         table = pd.DataFrame.from_dict(data["comparacion_validacion"], orient="index")
         cols = ["accuracy_cv", "f1_cv", "precision_cv", "recall_cv", "desviacion_f1_cv", "duracion_segundos"]
         st.markdown("### Comparación entre modelos (validación cruzada)")
-        st.dataframe(table[cols].rename_axis("Modelo"), use_container_width=True)
+        if PUBLIC_MODE:
+            for name, row in table.iterrows():
+                st.markdown(
+                    f"**{name}** — F1 CV: {row['f1_cv']:.3f}; "
+                    f"Recall CV: {row['recall_cv']:.3f}; "
+                    f"Precisión CV: {row['precision_cv']:.3f}"
+                )
+        else:
+            st.dataframe(table[cols].rename_axis("Modelo"), use_container_width=True)
         st.info("La elección se hizo con validación cruzada sobre el entrenamiento; la prueba se reservó para evaluar una sola vez al ganador. Las métricas de esta tabla son de CV, no del test.")
         error_path = METRICS / "analisis_errores_sin_texto.json"
         if error_path.exists():
