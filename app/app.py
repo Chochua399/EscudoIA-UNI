@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import json
 import io
+import base64
+from html import escape
 import subprocess
 import zipfile
 from pathlib import Path
@@ -59,6 +61,32 @@ def get_model():
     if not MODEL_FILE.exists():
         return None
     return cached_model(str(MODEL_FILE), MODEL_FILE.stat().st_mtime_ns)
+
+
+
+def show_evidence_image(path: Path, target=None, max_width: int = 1000):
+    """Muestra PNG sin ImageList.js en la versión pública de EscudoIA.
+
+    Usa únicamente figuras producidas localmente por el entrenamiento.
+    En desarrollo mantiene st.image; en el despliegue público utiliza
+    Markdown con imagen PNG en base64 para evitar el módulo ImageList.js.
+    """
+    path = Path(path)
+    if not path.is_file():
+        return
+    target = st if target is None else target
+    if PUBLIC_MODE:
+        safe_width = max(200, min(1600, int(max_width)))
+        safe_alt = escape(path.stem.replace("_", " "), quote=True)
+        encoded = base64.b64encode(path.read_bytes()).decode("ascii")
+        target.markdown(
+            f'<img src="data:image/png;base64,{encoded}" alt="{safe_alt}" '
+            f'style="display:block;width:100%;max-width:{safe_width}px;'
+            f'height:auto;margin:0.3rem auto 1rem;border-radius:8px;"/>',
+            unsafe_allow_html=True,
+        )
+    else:
+        target.image(str(path), use_container_width=True)
 
 
 def show_recommendations(items):
@@ -329,10 +357,10 @@ elif section == "📊 Resultados y EDA":
         for column, name in [(a, "matriz_confusion.png"), (b, "curva_roc.png")]:
             picture = FIGURES / name
             if picture.exists():
-                column.image(str(picture), use_container_width=True)
+                show_evidence_image(picture, target=column, max_width=560)
         p = FIGURES / "curva_precision_recall.png"
         if p.exists():
-            st.image(str(p), width=560)
+            show_evidence_image(p, max_width=700)
         st.download_button("Descargar métricas medidas (JSON)", path.read_bytes(), "resultados_ia.json", "application/json")
         terms_path = METRICS / "terminos_globales.json"
         if terms_path.exists():
@@ -352,7 +380,7 @@ elif section == "📊 Resultados y EDA":
     for file in ["01_distribucion_clases.png", "02_longitud_palabras.png", "03_indicadores_por_clase.png", "04_boxplot_longitud.png", "05_valores_ausentes.png", "06_enlaces_por_clase.png", "07_terminos_phishing.png"]:
         img = EDA / file
         if img.exists():
-            st.image(str(img), use_container_width=True)
+            show_evidence_image(img, max_width=1000)
             found = True
     if not found:
         st.info("EDA pendiente: abre **Entrenar IA** y pulsa el botón de preparación y entrenamiento.")
