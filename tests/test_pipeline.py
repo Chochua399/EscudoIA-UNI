@@ -3,7 +3,7 @@ import pandas as pd
 import pytest
 from src.data.make_dataset import normalize_text,load_spaphish
 from src.features.build_features import detect_signals
-from src.models.predict_model import analyze_message
+from src.models.predict_model import analyze_message, validate_message
 
 class DummyModel:
     def predict(self, inputs):return [1]
@@ -30,3 +30,12 @@ def test_import_clean_and_dedupe(tmp_path: Path):
                   'Label':[1,1,0,0]}).to_csv(file,sep=';',index=False)
     df,meta=load_spaphish(file)
     assert len(df)==3 and meta['duplicados_descartados']==1
+
+
+def test_random_letters_are_not_classified_as_phishing():
+    with pytest.raises(ValueError, match="contexto suficiente"):
+        analyze_message("asaSasASDASDWASDasdw", model=DummyModel())
+
+
+def test_three_meaningful_words_are_accepted():
+    assert validate_message("Su cuenta será suspendida mañana")
