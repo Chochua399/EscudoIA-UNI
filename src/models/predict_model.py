@@ -1,6 +1,7 @@
 """Predicción local (sin conexiones de red, sin persistir mensajes de usuarios)."""
 from __future__ import annotations
 import json
+import re
 from pathlib import Path
 
 import joblib
@@ -32,12 +33,26 @@ def load_metadata(path=None):
     return json.loads(filename.read_text(encoding="utf-8"))
 
 
-def analyze_message(message: str, model=None, model_path=None, metadata=None):
+def validate_message(message: str) -> str:
+    """Se abstiene ante entradas demasiado breves o sin contexto lingüístico.
+
+    Esta validación NO mide si un texto es phishing; previene que cadenas
+    aleatorias de letras reciban una clasificación potencialmente engañosa.
+    """
     text = normalize_text(message)
-    if len(text) < 12:
-        raise ValueError("Introduce un mensaje de al menos 12 caracteres para ofrecer suficiente contexto.")
     if len(text) > 20000:
         raise ValueError("El mensaje supera el máximo de 20.000 caracteres.")
+    words = re.findall(r"[^\W\d_]+", text, flags=re.UNICODE)
+    if len(words) < 3 or len(set(word.casefold() for word in words)) < 2:
+        raise ValueError(
+            "No hay contexto suficiente para analizar este texto. "
+            "Escribe al menos tres palabras de un mensaje real, sin datos personales."
+        )
+    return text
+
+
+def analyze_message(message: str, model=None, model_path=None, metadata=None):
+    text = validate_message(message)
     model = model if model is not None else load_model(model_path)
     predicted = int(model.predict([text])[0])
     probability = None
@@ -70,11 +85,7 @@ def analyze_message(message: str, model=None, model_path=None, metadata=None):
 
 def educational_signals_only(message):
     """Vista de demostración SIN modelo: NO realiza inferencia de IA."""
-    text = normalize_text(message)
-    if len(text) < 12:
-        raise ValueError("Introduce al menos 12 caracteres.")
-    if len(text) > 20000:
-        raise ValueError("El mensaje supera 20.000 caracteres.")
+    text = validate_message(message)
     return {
         "modo": "DEMO DE REGLAS: NO ES PREDICCIÓN DE IA",
         "senales": detect_signals(text),
